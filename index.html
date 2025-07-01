@@ -17,10 +17,87 @@
 			tab.classList.add('active');
 			const targetId = tab.dataset.tab;
 			document.getElementById(targetId).classList.add('active');
-			
-			});
+		  });
 		});
+
+		// Carousel functionality
+		const carousels = document.querySelectorAll('.carousel-container');
+		
+		carousels.forEach(carousel => {
+			const projects = carousel.querySelectorAll('.project-slide');
+			const prevBtn = carousel.querySelector('.carousel-btn.prev');
+			const nextBtn = carousel.querySelector('.carousel-btn.next');
+			const indicator = carousel.querySelector('.carousel-indicator');
+			let currentIndex = 0;
+
+			function updateCarousel() {
+				projects.forEach((project, index) => {
+					project.style.display = index === currentIndex ? 'flex' : 'none';
+				});
+				
+				if (indicator) {
+					indicator.textContent = `${currentIndex + 1} / ${projects.length}`;
+				}
+				
+				// Update button states
+				prevBtn.disabled = currentIndex === 0;
+				nextBtn.disabled = currentIndex === projects.length - 1;
+			}
+
+			prevBtn.addEventListener('click', () => {
+				if (currentIndex > 0) {
+					currentIndex--;
+					updateCarousel();
+				}
+			});
+
+			nextBtn.addEventListener('click', () => {
+				if (currentIndex < projects.length - 1) {
+					currentIndex++;
+					updateCarousel();
+				}
+			});
+
+			// Initialize
+			updateCarousel();
+		});
+		
+		const lightbox = document.getElementById('lightbox');
+		const lightboxImg = document.getElementById('lightbox-img');
+		const lightboxClose = document.getElementById('lightbox-close');
+		const clickableImages = document.querySelectorAll('.media-column img, .profile-pic');
+		
+		clickableImages.forEach(img => {
+		  img.style.cursor = 'pointer';
+		  img.addEventListener('click', (e) => {
+		    e.preventDefault();
+			lightboxImg.src = img.src;
+			lightboxImg.alt = img.alt;
+			lightbox.style.display = 'flex';
+			document.body.style.overflow = 'hidden';
+		});
+	  });
+	  
+	  lightboxClose.addEventListener('click', () => {
+	    lightbox.style.display = 'none';
+		document.body.style.overflow = 'auto';
+	  });
+	  
+	  lightbox.addEventListener('click', (e) => {
+	    if (e.target === lightbox) {
+		  lightbox.style.display = 'none';
+		  document.body.style.overflow = 'auto';
+		}
+	  });
+	  
+	  document.addEventListener('keydown', (e) => {
+	    if (e.key === 'Escape' && lightbox.style.display === 'flex') {
+	      lightbox.style.display = 'none';
+		  document.body.style.overflow = 'auto';
+		}
+	  });
 	});
+	
   </script>
   
   <link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,100..900;1,100..900&display=swap" rel="stylesheet">
@@ -75,7 +152,7 @@
 	}
 	
 	.profile-side {
-	  text-align: center:
+	  text-align: center;
 	  min-width: 220px;
 	}
 	
@@ -85,6 +162,11 @@
 	  border-radius: 50%;
 	  object-fit: cover;
 	  margin-bottom: 1rem;
+	  transition: transform 0.3s ease;
+	}
+	
+	.profile-pic:hover {
+	  transform: scale(1.05);
 	}
 	
 	.about-text {
@@ -100,6 +182,80 @@
 	  text-align: left;
 	  font-size: 1.1rem;
 	  line-height: 1.6;
+	}
+	
+	.carousel-container {
+	  position: relative;
+	  max-width: 1000px;
+	  margin: 0 auto;
+	}
+	
+	.carousel-wrapper {
+	  position: relative;
+	  overflow: hidden;
+	}
+	
+	.project-slide {
+	  display: flex;
+	  gap: 2rem;
+	  align-items: flex-start;
+	  background: #fff;
+	  padding: 2rem;
+	  border-radius: 8px;
+	  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+	  margin-bottom: 1rem;
+	}
+	
+	.carousel-controls {
+	  display: flex;
+	  justify-content: space-between;
+	  align-items: center;
+	  margin-top: 1rem;
+	}
+	
+	.carousel-btn {
+	  background: #0077cc;
+	  color: white;
+	  border: none;
+	  padding: 0.75rem 1.5rem;
+	  border-radius: 50px;
+	  cursor: pointer;
+	  font-family: 'Montserrat', sans-serif;
+	  font-weight: 600;
+	  font-size: 1rem;
+	  transition: all 0.3s ease;
+	  display: flex;
+	  align-items: center;
+	  gap: 0.5rem;
+	}
+	
+	.carousel-btn:hover:not(:disabled) {
+	  background: #005599;
+	  transform: translateY(-2px);
+	}
+	
+	.carousel-btn:disabled {
+	  background: #ccc;
+	  cursor: not-allowed;
+	  transform: none;
+	}
+	
+	.carousel-btn.prev::before {
+	  content: "←";
+	  font-size: 1.2rem;
+	}
+	
+	.carousel-btn.next::after {
+	  content: "→";
+	  font-size: 1.2rem;
+	}
+	
+	.carousel-indicator {
+	  background: #f0f0f0;
+	  padding: 0.5rem 1rem;
+	  border-radius: 20px;
+	  font-weight: 600;
+	  color: #666;
 	}
 	
 	.project {
@@ -171,7 +327,7 @@
 	  border: none;
 	  cursor: pointer;
 	  font-weight: bold;
-	  border-radius: 8px
+	  border-radius: 8px;
 	  transition: all 0.3s ease;
 	}
 	
@@ -220,7 +376,6 @@
 	  width: 100%;
 	  border-radius: 8px;
 	  height: auto;
-
 	}
 	
 	.text-column {
@@ -247,32 +402,112 @@
 	}
 	
 	.text-column a:hover {
-	  text-decoration: underline:
+	  text-decoration: underline;
 	}
 	
+	.lightbox {
+	  display: none;
+	  position: fixed;
+	  z-index: 1000;
+	  left: 0;
+	  top: 0;
+	  width: 100%;
+	  height: 100%;
+	  background-color: rgba(0, 0, 0, 0.9);
+	  justify-content: center;
+	  align-items: center;
+	  animation: fadeIn 0.3s ease;
+	}
+	
+	.lightbox-content {
+	  position: relative;
+	  max-width: 90%;
+	  max-height: 90%;
+	  margin: auto;
+	  display: block;
+	}
+	
+	.lightbox img {
+	  width: 100%;
+	  height: auto;
+	  max-width: 100%;
+	  max-height: 90vh;
+	  object-fit: contain;
+	  border-radius: 8px;
+	  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
+	}
+	
+	.lightbox-close {
+	  position: absolute;
+	  top: 15px;
+	  right: 35px;
+	  color: #fff;
+	  font-size: 40px;
+	  font-weight: bold;
+	  cursor: pointer;
+	  transition: color 0.3s ease;
+	  background: rgba(0, 0, 0, 0.5);
+	  width: 50px;
+	  height: 50px;
+	  border-radius: 50%;
+	  display: flex;
+	  align-items: center;
+	  justify-content: center;
+	}
+	
+	.lightbox-close:hover {
+	  color: #0077c;
+	  background: rgba(0, 0, 0, 0.7);
+	}
+	
+	@keyframes fadeIn {
+	  from { opacity: 0; }
+	  to { opacity: 1; }
+	}
+
 	@media (max-width: 768px) {
 	  .about-wrapper {
-	  flex-direction: column;
-	  text-align: center;
-	}
+	    flex-direction: column;
+	    text-align: center;
+	  }
 	
-	.project-layout {
-	flex-direction: column;
-	}
+	  .project-layout {
+	    flex-direction: column;
+	  }
+
+	  .project-slide {
+	    flex-direction: column;
+	  }
+
+
 	
-	.tab-buttons {
-	flex-direction: column;
-	gap: 1rem;
-	}
+	  .tab-buttons {
+	    flex-direction: column;
+	    gap: 1rem;
+	  }
 	
-	.tab {
-	font-size: 1rem;
-	}
+	  .tab {
+	    font-size: 1rem;
+	  }
 	
-	header h1 {
-	font-size: 2rem;
+	  header h1 {
+	    font-size: 2rem;
+	  }
+	
+	  .carousel-controls {
+	    flex-direction: column;
+	    gap: 1rem;
+	  }
+	  
+	  .lightbox-close {
+	    top: 10px;
+		right: 15px;
+		font-size: 30px;
+		width: 40px;
+		height: 40px;
+	  }
+	  
 	}
-  }
 
   </style>
 </head>
@@ -282,7 +517,7 @@
     <h1>Pablo Andrés Ruiz Ramírez - Game Developer Portfolio</h1>
 	<section class ="about-wrapper">
 	<div class = "profile-side">
-	<img src="pabloimage.jpg" alt="Pablo Ruiz" class = "profile-pic" style="width:200px; height:200px; border-radius:50%; object-fit:cover; margin-bottom:1rem;" />
+	<img src="./images/pabloimage.jpg" alt="Pablo Ruiz" class = "profile-pic" style="width:200px; height:200px; border-radius:50%; object-fit:cover; margin-bottom:1rem;" />
 	<div class="social-icons">
 		  <a href="mailto:pabloruizrmz01@gmail.com" target="_blank">
 		  <i class="fi fi-sr-envelope"></i>
@@ -313,58 +548,159 @@
 	<button class = "tab" data-tab= "software">Software</button>
     </div>
   
-    <div class = "tab-content active" id = "projects">  
-      <div class = "project-layout">
+    <div class = "tab-content active" id = "projects"> 
+	<div class = "carousel-container">
+	  <div class = "carousel-wrapper">
+	  <!-- Diu Somnus -->
+      <div class = "project-slide">
         <div class = "media-column">
 		<iframe src = "https://www.youtube.com/embed/MxatJvZZpIg" frameborder = "0" allowfullscreen></iframe>
-		<img src = "flashlightflicker.png" alt="Code Example" />
-		<img src = "diusomnusleveldesign.png" alt ="Level Design Example" />
+		<img src = "./images/flashlightflicker.png" alt="Code Example" />
+		<img src = "./images/diusomnusleveldesign.png" alt ="Level Design Example" />
 		</div>
 		
 	   	<div class = "text-column">
 		<h3>Diu Somnus (2025)</h3>
 		<p><i>Genre:</i> Survival Horror</p>
 		<p><i>What I did:</i> Designed the level arena and 3D environments closely following real-world places. Implemented data structures, inventory system and player mechanics.</p>
-		<p><i>Team size:</i> Two members which was me and Helena Ruiz (link)</p>
+		<p><i>Team size:</i> Two members (myself and <a href="https://renasonas.itch.io/">Helena Ruiz</a>)</p>
 		<p><i>Time on project:</i> 6 months. We started it on September 2023 and worked on it for three months. </p>
 		<p> Then on the beginning of 2025 we worked on it again for three more months to release 2.0 </p>
 		<p><i>Engine and tools:</i> Unity, Unity Source Control, Trello</p>
 		<a href="https://renasonas.itch.io/diu-somnus">Play on Itch.io →</a>
 		</div>
 	</div>
+	  <!-- Soul Siege -->
+      <div class = "project-slide">
+       <div class = "media-column">
+	    <iframe src = "https://www.youtube.com/embed/5boMEku-tpc" frameborder = "0" allowfullscreen></iframe>
+		<img src = "./images/soulsiegeblueprint.png" alt="Code Example" />
+		<img src = "./images/soulsiegeleveldesign.png" alt ="Level Design Example" />
+		</div>
+		
+	   	<div class = "text-column">
+		<h3>Soul Siege (2024)</h3>
+		<p><i>Genre:</i> 3D PVP Platformer</p>
+		<p><i>What I did:</i>Designed the level arena and 3D environment. Designed the player mechanics, core gameplay mechanics and obstacle placements.</p>
+		<p><i>Team size:</i> Two programmers (myself and <a href="https://renasonas.itch.io/">Helena Ruiz</a>) and one artist (<a href="https://cakedoodles.itch.io/">Katherine Cadaon</a>)</p>
+		<p><i>Time on project:</i> 3 months</p>
+		<p><i>Engine and tools:</i> Unreal Engine 4, Perforce, Trello</p>
+		<a href="https://renasonas.itch.io/soul-siege">Play on Itch.io →</a>
+		</div>
     </div>
 	
+	
+	<!-- Rolling Madness -->
+	  <div class="project-slide">
+		<div class="media-column">
+		  <iframe src="https://www.youtube.com/embed/WWKNk7XR6-E" frameborder="0" allowfullscreen></iframe>
+		  <img src="./images/rollingmadnessleveldesign.png" alt="Rolling Madness Screenshot" />
+		  </div>
+		  
+		  <div class="text-column">
+		  <h3>Rolling Madness (2023)</h3>
+		  <p><i>Genre:</i> 3D Platformer</p>
+		  <p><i>What I did:</i> Built a game under 2 months for my class of Mobile Game Development. Explored mobile gaming development. Designed and programmed all mechanics and levels.</p>
+		  <p><i>Team size:</i> Solo project</p>
+		  <p><i>Time on project:</i> 2 months</p>
+		  <p><i>Engine and tools:</i> Unity, Git, Trello</p>
+		  <a href="https://paruiz.itch.io/rolling-madness">Play on Itch.io →</a>
+		  </div>
+	  </div>
+	</div>
+	
+	  <div class = "carousel-controls">
+	  <button class = "carousel-btn prev">Previous</button>
+	  <div class = "carousel-indicator"> 1 / 3 </div>
+	  <button class = "carousel-btn next">Next</button>
+	  </div>
+   </div>
+   </div>
+	
    <div class = "tab-content" id = "gamejams">
-   <div class = "project-layout">
-          <div class = "media-column">
+   <div class = "carousel-container">
+     <div class = "carousel-wrapper">
+	 <!-- Balance Keeper -->
+     <div class = "project-slide">
+        <div class = "media-column">
 		<iframe src = "https://www.youtube.com/embed/n25_elJCtJ8" frameborder = "0" allowfullscreen></iframe>
-		<img src = "combinationcard.png" alt="Code Example" />
+		<img src = "./images/combinationcard.png" alt="Code Example" />
 		</div>
 		<div class = "text-column">
 		  <h3>Balance Keeper (2025)</h3>
 		  <p><i>Genre:</i> Card Game</p>
 		  <p><i>What I did:</i> Built a game under 48 hours for the TalTech GameCamp. Coded the gameplay logic, including turn system, deck shuffling, and win conditions. Desgined a responsive UI for drawing and playing cards. </p>
-		  <p><i>Team size:</i> Two programmers (Aleksei Šohh and myself) and one artist (Liisa Leit)(link)</p>
+		  <p><i>Team size:</i> Two programmers (Aleksei Šohh and myself) and one artist (<a href = "https://liilei.itch.io/">Liisa Leit</a>)</p>
 		  <p><i>Time on project:</i> 48 hours </p>
 		  <p><i>Engine and tools:</i> Unity, Git, Trello</p>
-		  <a href="https://renasonas.itch.io/diu-somnus">Play on Itch.io →</a>
+		  <a href="https://renasonas.itch.io/balance-keeper">Play on Itch.io →</a>
+		</div>
+	 </div>
+	<!-- Mushie Mush -->
+	 <div class = "project-slide">
+        <div class = "media-column">
+		<img src = "./images/mushiemush.png" alt="Example" />
+		<img src = "./images/mushiemush2.png" alt="Example" />
+		<img src = "./images/slotmover.png" alt="Example" />
+		</div>
+		<div class = "text-column">
+		  <h3>Mushie Mush (2024)</h3>
+		  <p><i>Genre:</i> 2D Puzzle</p>
+		  <p><i>What I did:</i> Built a game under 48 hours for the Global Game Jam. Coded the item logic, puzzle logic and sound mixing. </p>
+		  <p><i>Team size:</i> Two programmers (<a href="https://renasonas.itch.io/">Helena Ruiz </a> and myself), two artists (<a href="https://cakedoodles.itch.io/">Katherine Cadaon</a>, <a href = "https://splash-hd.itch.io/"> SplashHD</a>) and one sound director (İlayda Gümüş)</p>
+		  <p><i>Time on project:</i> 48 hours </p>
+		  <p><i>Engine and tools:</i> Unity, Git, Trello</p>
+		  <a href="https://renasonas.itch.io/mushie-mush">Play on Itch.io →</a>
+		</div>
+	 </div>
+	 <!-- Lost Fawn Store -->
+	<div class="project-slide">
+		<div class="media-column">
+		<img src="images/lostfawnstore.png" alt="Lost Fawn Store Screenshot" />
+		<img src = "./images/lostfawnstorecode.png" alt="Code" />
+		</div>
+		<div class="text-column">
+			<h3>Lost Fawn Store (2023)</h3>
+			<p><i>Genre:</i> 2D Adventure</p>
+			<p><i>What I did:</i> Built a game under 48 hours for the Global Game Jam 2023. Coded the interaction system, player movement and designed a couple of rooms.</p>
+			<p><i>Team size:</i> Five members - three programmers (<a href = "https://laerin.itch.io/">Maxim Yurchenko</a>, <a href = "https://renasonas.itch.io/">Helena Ruiz</a> and myself), one writer (<a href = "https://illustrografika.itch.io/">Ekaterina Kazankova</a>) and one music director (<a href = "https://george-guilty.itch.io/">George Guilty</a>)</p>
+			<p><i>Time on project:</i> 48 hours</p>
+			<p><i>Engine and tools:</i> Unity, Git, Trello</p>
+			<a href="https://renasonas.itch.io/lost-fawn-shop">Play on Itch.io →</a>
 		</div>
 	</div>
 	</div>
-	
-  <div class = "tab-content" id = "software">     
-  <div class = "project-layout">
-        <div class = "media-column">
-	  <iframe src = "https://www.youtube.com/embed/7zcHfv-Q1do" frameborder = "0" allowfullscreen></iframe>
-	  <img src = "discordbot.png" alt="Code Example" />
-	  </div>
-	  <div class = "text-column">
-		  <h3>Discord Gif Bot (2025)</h3>
-		  <p><i>What I did:</i> Programmed a bot that replies with GIFs according to the user’s prompt.</p>
-		  <p><i>Tools used:</i> Python, Discord API</p>
-		  <p><i>Features:</i> GIF selection, integrating with GIF APIs 
-	  </div>
+    
+	<div class="carousel-controls">
+	<button class="carousel-btn prev">Previous</button>
+	<div class="carousel-indicator">1 / 3</div>
+	<button class="carousel-btn next">Next</button>
+	</div>
   </div>
+  </div>
+	
+  <div class = "tab-content" id = "software">
+    <div class="section">
+      <div class = "project-layout">
+        <div class = "media-column">
+          <iframe src = "https://www.youtube.com/embed/7zcHfv-Q1do" frameborder = "0" allowfullscreen></iframe>
+          <img src = "./images/discordbot.png" alt="Code Example" />
+        </div>
+        <div class = "text-column">
+          <h3>Discord Gif Bot (2025)</h3>
+          <p><i>What I did:</i> Programmed a bot that replies with GIFs according to the user's prompt.</p>
+          <p><i>Tools used:</i> Python, Discord API</p>
+          <p><i>Features:</i> GIF selection, integrating with GIF APIs</p>
+        </div>
+      </div>
+    </div>
+  </div>
+  
+  <div id = "lightbox" class = "lightbox">
+    <span id = "lightbox-close" class = "lightbox-close">&times;</span>
+	<div class = "lightbox-content">
+	  <img id = "lightbox-img" src="" alt="">
+	</div>
   </div>
   
   <footer>
